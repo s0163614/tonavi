@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование товара</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #bb86fc;
+            --secondary: #03dac6;
+            --dark: #121212;
+            --light: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+        }
+        
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: var(--light);
+            padding: 30px;
+            border-radius: 10px;
+        }
+        
+        h1 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-muted);
+        }
+        
+        input {
+            width: 100%;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: var(--text);
+        }
+        
+        .buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .save-btn {
+            background: var(--primary);
+            color: #000;
+        }
+        
+        .cancel-btn {
+            background: #444;
+            color: var(--text);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Редактирование товара</h1>
+        
+        <form method="POST">
+            <div class="form-group">
+                <label for="name">Название:</label>
+                <input type="text" id="name" name="name" value="{{ product['Название'] }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="article">Артикул:</label>
+                <input type="text" id="article" name="article" value="{{ product['Артикул'] }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="length">Длина (см):</label>
+                <input type="number" id="length" name="length" value="{{ product['Длина (см)'] }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="width">Ширина (см):</label>
+                <input type="number" id="width" name="width" value="{{ product['Ширина (см)'] }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="height">Высота (см):</label>
+                <input type="number" id="height" name="height" value="{{ product['Высота (см)'] }}" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="price">Цена:</label>
+                <input type="number" id="price" name="price" value="{{ product['Цена'] }}" required>
+            </div>
+            
+<!-- Добавьте в тело формы перед кнопками -->
+{% if error %}
+<div style="color: #ff4444; margin-bottom: 15px; padding: 10px; background: rgba(255, 68, 68, 0.1); border-radius: 5px;">
+    {{ error }}
+</div>
+{% endif %}
+
+            <div class="buttons">
+                <button type="submit" class="save-btn">Сохранить</button>
+                <a href="{{ url_for('index') }}" class="cancel-btn">Отмена</a>
+            </div>
+        </form>
+    </div>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

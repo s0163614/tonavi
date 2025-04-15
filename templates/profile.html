@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #bb86fc;
+            --secondary: #03dac6;
+            --dark: #121212;
+            --light: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        h1 {
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .logout-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .profile-section {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-item {
+            margin-bottom: 15px;
+        }
+
+        .info-label {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .info-value {
+            font-size: 16px;
+        }
+
+        .search-section {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .search-title {
+            color: var(--primary);
+            margin-top: 0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-title i {
+            margin-right: 10px;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .inn-input {
+            flex: 1;
+            padding: 10px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: var(--text);
+        }
+
+        .search-btn {
+            background: var(--primary);
+            color: #000;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .result-container {
+            margin-top: 20px;
+        }
+
+        .saved-companies {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        .company-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .company-card {
+            background: #252525;
+            border-radius: 8px;
+            padding: 15px;
+            border: 1px solid var(--border);
+        }
+
+        .company-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+
+        .company-name {
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .delete-btn {
+            color: #ff4444;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+
+        .company-details {
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .view-details {
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        /* Модальное окно */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .modal.active {
+            opacity: 1;
+            pointer-events: all;
+        }
+
+        .modal-content {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 25px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            margin: 0;
+            color: var(--primary);
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            line-height: 1.6;
+        }
+
+        .modal-body p {
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Профиль пользователя</h1>
+            <button class="logout-btn" onclick="window.location.href='{{ url_for('login') }}'">
+                <i class="fas fa-sign-out-alt"></i> Выйти
+            </button>
+        </div>
+
+        <div class="profile-section">
+            <h2>Информация о профиле</h2>
+            <div class="profile-info">
+                <div class="info-item">
+                    <div class="info-label">Логин</div>
+                    <div class="info-value">{{ user.username }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Счет</div>
+                    <textarea id="userInfoTextarea" style="width: 100%; min-height: 100px; background: #333; border: 1px solid #444; color: var(--text); padding: 10px;">{{ user.user_info or '' }}</textarea>
+                    <button onclick="saveUserInfo()" style="margin-top: 10px; background: var(--primary); color: #000; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-save"></i> Сохранить информацию
+                    </button>
+                </div>
+                {% if not user.post %}
+                <div class="info-item" style="grid-column: span 2;">
+                    <a href="{{ url_for('suppliers_list') }}" 
+                    class="suppliers-button">
+                        <i class="fas fa-users"></i> Список поставщиков
+                    </a>
+                </div>
+                {% endif %}
+                {% if user.company_info %}
+                <div class="info-item">
+                    <div class="info-label">Компания</div>
+                    <div class="info-value">{{ user.company_info.name }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">ИНН</div>
+                    <div class="info-value">{{ user.company_info.inn }}</div>
+                </div>
+                <div class="info-item">
+                    <div class="info-label">Адрес</div>
+                    <div class="info-value">{{ user.company_info.address }}</div>
+                </div>
+                <!-- Добавить в секцию profile-section после блока с информацией о компании -->
+                
+                {% else %}
+                <div class="info-item">
+                    <div class="info-label">Компания</div>
+                    <div class="info-value">Не указана</div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="search-section">
+            <h2 class="search-title">
+                <i class="fas fa-search"></i> Поиск компании по ИНН
+            </h2>
+            <div class="search-form">
+                <input type="text" class="inn-input" id="innInput" placeholder="Введите ИНН (10 или 12 цифр)" pattern="\d{10,12}" required>
+                <button class="search-btn" id="searchBtn">Найти</button>
+            </div>
+            <div class="result-container" id="companyInfoResult"></div>
+        </div>
+
+        <div class="saved-companies">
+            <h2>Сохраненные компании</h2>
+            {% if user.saved_companies %}
+            <div class="company-grid" id="savedCompanies">
+                {% for company in user.saved_companies %}
+                <div class="company-card">
+                    <div class="company-header">
+                        <h3 class="company-name">{{ company.name }}</h3>
+                        <button class="delete-btn" onclick="removeCompany('{{ company.inn }}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    <div class="company-details">
+                        <p>ИНН: {{ company.inn }}</p>
+                        <p>ОГРН: {{ company.ogrn }}</p>
+                        <a href="#" class="view-details" onclick="showCompanyDetails(event, {{ company | tojson }})">
+                            Подробнее
+                        </a>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <p>У вас нет сохраненных компаний</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Модальное окно для просмотра компании -->
+    <div class="modal" id="companyModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalCompanyName"></h3>
+                <button class="close-modal" onclick="hideModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalCompanyContent"></div>
+        </div>
+    </div>
+
+    <script>
+        // Поиск компании по ИНН
+        document.getElementById('searchBtn').addEventListener('click', searchByINN);
+
+        function searchByINN() {
+            const inn = document.getElementById('innInput').value.trim();
+            const resultDiv = document.getElementById('companyInfoResult');
+
+            if (!/^\d{10,12}$/.test(inn)) {
+                alert('Введите корректный ИНН (10 или 12 цифр)');
+                return;
+            }
+
+            resultDiv.innerHTML = `
+                <div style="text-align: center; padding: 20px;">
+                    <i class="fas fa-spinner fa-spin"></i> Загрузка данных...
+                </div>
+            `;
+
+            fetch('/get_company_info', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({inn: inn})
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    if (data.multiple) {
+                        showCompanySelection(data.data);
+                    } else {
+                        displayCompanyInfo(data.data);
+                    }
+                } else {
+                    resultDiv.innerHTML = `
+                        <div style="color: #ff4444; text-align: center;">
+                            <i class="fas fa-exclamation-circle"></i> ${data.message || 'Ошибка при поиске компании'}
+                        </div>
+                    `;
+                }
+            })
+            .catch(error => {
+                resultDiv.innerHTML = `
+                    <div style="color: #ff4444; text-align: center;">
+                        <i class="fas fa-exclamation-circle"></i> Ошибка сети: ${error.message}
+                    </div>
+                `;
+            });
+        }
+
+        function showCompanySelection(companies) {
+            const resultDiv = document.getElementById('companyInfoResult');
+            let html = `
+                <div style="background: #252525; padding: 15px; border-radius: 8px;">
+                    <h4 style="margin-top: 0;">Найдено ${companies.length} компаний с ИНН ${companies[0].inn}</h4>
+                    <div style="margin-top: 15px;">
+            `;
+
+            companies.forEach((company, index) => {
+                html += `
+                    <div style="padding: 10px; border-bottom: 1px solid #444; cursor: pointer;"
+                         onclick="selectCompany(${index})">
+                        <div style="font-weight: 600;">${company.name || 'Без названия'}</div>
+                        <div style="font-size: 14px; color: #aaa;">Статус: ${company.status || 'неизвестен'}</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                    </div>
+                    <div style="font-size: 14px; color: #aaa; margin-top: 10px;">
+                        Выберите компанию из списка
+                    </div>
+                </div>
+            `;
+
+            resultDiv.innerHTML = html;
+            window.currentCompanies = companies;
+        }
+
+        function selectCompany(index) {
+            displayCompanyInfo(window.currentCompanies[index]);
+        }
+
+        function displayCompanyInfo(company) {
+            const resultDiv = document.getElementById('companyInfoResult');
+            let html = `
+                <div style="background: #252525; padding: 15px; border-radius: 8px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                        <h3 style="margin: 0;">${company.name || 'Нет названия'}</h3>
+                        <button style="background: #03dac6; color: #000; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer;"
+                                onclick="saveCompany(${JSON.stringify(company).replace(/"/g, '&quot;')})">
+                            <i class="fas fa-save"></i> Сохранить
+                        </button>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <p><strong>ИНН:</strong> ${company.inn}</p>
+                            ${company.ogrn ? `<p><strong>ОГРН:</strong> ${company.ogrn}</p>` : ''}
+                            ${company.kpp ? `<p><strong>КПП:</strong> ${company.kpp}</p>` : ''}
+                            ${company.registration_date ? `<p><strong>Дата регистрации:</strong> ${company.registration_date}</p>` : ''}
+                            ${company.status ? `<p><strong>Статус:</strong> ${company.status}</p>` : ''}
+                        </div>
+                        <div>
+                            ${company.address ? `<p><strong>Адрес:</strong> ${company.address}</p>` : ''}
+                            ${company.director ? `<p><strong>Руководитель:</strong> ${company.director}</p>` : ''}
+                            ${company.director_position ? `<p><strong>Должность:</strong> ${company.director_position}</p>` : ''}
+                            ${company.okved ? `<p><strong>ОКВЭД:</strong> ${company.okved}</p>` : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            resultDiv.innerHTML = html;
+        }
+
+        function saveCompany(company) {
+            fetch('/save_company', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(company)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Компания сохранена в ваш профиль');
+                    location.reload();
+                } else {
+                    alert(data.message || 'Ошибка при сохранении компании');
+                }
+            })
+            .catch(error => {
+                alert('Ошибка сети: ' + error.message);
+            });
+        }
+
+        function removeCompany(inn) {
+            if (confirm('Вы уверены, что хотите удалить эту компанию из сохраненных?')) {
+                fetch('/remove_company/' + inn, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        location.reload();
+                    } else {
+                        alert(data.message || 'Ошибка при удалении компании');
+                    }
+                })
+                .catch(error => {
+                    alert('Ошибка сети: ' + error.message);
+                });
+            }
+        }
+
+        function showCompanyDetails(event, company) {
+            event.preventDefault();
+            const modal = document.getElementById('companyModal');
+            const nameElement = document.getElementById('modalCompanyName');
+            const contentElement = document.getElementById('modalCompanyContent');
+
+            nameElement.textContent = company.name || 'Нет названия';
+
+            let html = `
+                <p><strong>ИНН:</strong> ${company.inn || 'Нет данных'}</p>
+                ${company.ogrn ? `<p><strong>ОГРН:</strong> ${company.ogrn}</p>` : ''}
+                ${company.kpp ? `<p><strong>КПП:</strong> ${company.kpp}</p>` : ''}
+                ${company.registration_date ? `<p><strong>Дата регистрации:</strong> ${company.registration_date}</p>` : ''}
+                ${company.status ? `<p><strong>Статус:</strong> ${company.status}</p>` : ''}
+                ${company.address ? `<p><strong>Адрес:</strong> ${company.address}</p>` : ''}
+                ${company.director ? `<p><strong>Руководитель:</strong> ${company.director}</p>` : ''}
+                ${company.director_position ? `<p><strong>Должность:</strong> ${company.director_position}</p>` : ''}
+                ${company.okved ? `<p><strong>ОКВЭД:</strong> ${company.okved}</p>` : ''}
+                <p style="margin-top: 20px; font-size: 12px; color: #aaa;">
+                    <i class="fas fa-info-circle"></i> Данные предоставлены сервисом Dadata
+                </p>
+            `;
+
+            contentElement.innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        function hideModal() {
+            document.getElementById('companyModal').classList.remove('active');
+        }
+    </script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

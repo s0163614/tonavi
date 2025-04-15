@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мои заказы</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #bb86fc;
+            --secondary: #03dac6;
+            --dark: #121212;
+            --light: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #00c853;
+            --warning: #ffab00;
+            --error: #ff4444;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .orders-list {
+            display: grid;
+            gap: 20px;
+        }
+
+        .order-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            border: 1px solid var(--border);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .order-id {
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .order-status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: var(--warning);
+            color: #000;
+        }
+
+        .status-confirmed {
+            background: var(--success);
+            color: #000;
+        }
+
+        .status-canceled {
+            background: var(--error);
+            color: #fff;
+        }
+
+        .order-details {
+            margin-bottom: 15px;
+        }
+
+        .order-detail {
+            display: flex;
+            margin-bottom: 8px;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            min-width: 120px;
+            color: var(--text-muted);
+        }
+
+        .order-items {
+            margin-top: 20px;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .order-actions {
+            margin-top: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 15px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            border: none;
+        }
+
+        .btn-confirm {
+            background: var(--success);
+            color: #000;
+        }
+
+        .btn-cancel {
+            background: var(--error);
+            color: #fff;
+        }
+
+        .empty-orders {
+            text-align: center;
+            padding: 50px 0;
+        }
+
+        .empty-icon {
+            font-size: 3rem;
+            color: var(--text-muted);
+            margin-bottom: 20px;
+        }
+        .alert-message {
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    display: none;
+}
+
+.alert-success {
+    background: var(--success);
+    color: #000;
+}
+
+.alert-error {
+    background: var(--error);
+    color: #fff;
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Мои заказы</h1>
+        
+        {% if orders %}
+        <div class="orders-list">
+            {% for order in orders %}
+            <div class="order-card">
+                <div class="order-header">
+                    <span class="order-id">Заказ #{{ order.id[:8] }}</span>
+                    <span class="order-status status-{{ order.status }}">
+                        {% if order.status == 'pending' %}Ожидает подтверждения{% endif %}
+                        {% if order.status == 'confirmed' %}Подтвержден{% endif %}
+                        {% if order.status == 'canceled' %}Отменен{% endif %}
+                    </span>
+                </div>
+                
+                <div class="order-details">
+                    <div class="order-detail">
+                        <span class="detail-label">Поставщик:</span>
+                        <span>{{ order.supplier_name }}</span>
+                    </div>
+                    <div class="order-detail">
+                        <span class="detail-label">Дата создания: </span>
+                        <span>{{ order.created_at_formatted }}</span>
+                    </div>
+                    {% if order.confirmed_at %}
+                    <div class="order-detail">
+                        <span class="detail-label">Дата подтверждения: </span>
+                        <span>{{ order.confirmed_at_formatted }}</span>
+                    </div>
+                    {% endif %}
+                    <div class="order-detail">
+                        <span class="detail-label">Сумма:</span>
+                        <span>{{ "%.2f"|format(order.total) }} ₽</span>
+                    </div>
+                </div>
+                
+                <div class="order-items">
+                    <h3>Товары:</h3>
+                    {% if order.order_items %}
+                        {% for item in order.order_items %}
+                        <div class="order-item">
+                            <span>{{ item.name }} ({{ item.article }}) × {{ item.quantity }}</span>
+                            <span>{{ "%.2f"|format(item.price * item.quantity) }} ₽</span>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="order-item">
+                            <span>Нет товаров в заказе</span>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="empty-orders">
+            <div class="empty-icon">
+                <i class="fas fa-box-open"></i>
+            </div>
+            <h3>Заказов пока нет</h3>
+            <p>Здесь будут отображаться ваши заказы поставщикам</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html>

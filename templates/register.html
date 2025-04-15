@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #bb86fc;
+            --secondary: #03dac6;
+            --dark: #121212;
+            --light: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .register-container {
+            background: var(--light);
+            padding: 30px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-muted);
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: var(--text);
+            font-size: 16px;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .error {
+            color: #ff4444;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 20px;
+            color: var(--text-muted);
+        }
+
+        .login-link a {
+            color: var(--secondary);
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="register-container">
+        <h1>Регистрация</h1>
+
+        {% if error %}
+        <div class="error">
+            <i class="fas fa-exclamation-circle"></i> {{ error }}
+        </div>
+        {% endif %}
+
+        <form method="POST">
+            <div class="form-group">
+                <label for="username">Логин</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Пароль</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            <div class="form-group">
+                <label>Выберите роль:</label>
+                <div style="display: flex; gap: 15px; margin-top: 10px;">
+                    <label style="display: flex; align-items: center;">
+                        <input type="radio" name="post" value="1" required> Поставщик
+                    </label>
+                    <label style="display: flex; align-items: center;">
+                        <input type="radio" name="post" value="0" required> Продавец
+                    </label>
+                </div>
+            </div>
+
+            <button type="submit">
+                <i class="fas fa-user-plus"></i> Зарегистрироваться
+            </button>
+        </form>
+
+        <div class="login-link">
+            Уже есть аккаунт? <a href="{{ url_for('login') }}">Войдите</a>
+        </div>
+    </div>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+</body>
+</html>

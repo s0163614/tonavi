@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создание карточек WB</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #7c4dff;
+            --secondary: #00e5ff;
+            --dark: #121212;
+            --dark-light: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            padding-top: 80px;
+        }
+
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: var(--dark-light);
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .brand-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn {
+            background: var(--primary);
+        }
+
+        .logout-btn {
+            background: #ff4444;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(to right, #ffffff, #ffffff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .api-key-section {
+            background: var(--dark-light);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border);
+        }
+
+        .api-key-input {
+            width: 100%;
+            padding: 12px 15px;
+            margin-bottom: 15px;
+            background: #2c2c2c;
+            border: 1px solid #444;
+            color: white;
+            border-radius: 6px;
+            font-size: 1rem;
+        }
+
+        .create-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .create-btn:hover {
+            background: #6a3dff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .product-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .product-item {
+            display: flex;
+            align-items: center;
+            background: var(--dark-light);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .product-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+            border-color: var(--primary);
+        }
+
+        .product-image {
+            width: 150px;
+            height: 150px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .product-item:hover .product-image img {
+            transform: scale(1.05);
+        }
+
+        .product-info {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .product-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .product-article {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 15px;
+        }
+
+        .product-variants {
+            margin-top: 15px;
+            border-top: 1px solid var(--border);
+            padding-top: 15px;
+        }
+
+        .variant-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .variant-item:last-child {
+            border-bottom: none;
+        }
+
+        .variant-size {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .variant-price {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        .product-checkbox {
+            margin-right: 15px;
+            transform: scale(1.3);
+        }
+
+        .wb-id {
+            color: var(--secondary);
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .product-item {
+                flex-direction: column;
+            }
+
+            .product-image {
+                width: 100%;
+                height: 200px;
+            }
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="header-wrapper">
+        <div class="main-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo/logo4.png') }}" alt="Логотип" class="logo">
+                
+            </div>
+
+            <div class="header-actions">
+                <a href="{{ url_for('index') }}" class="nav-btn back-btn">
+                    <i class="fas fa-arrow-left"></i> На главную
+                </a>
+                <a href="{{ url_for('login') }}" class="nav-btn logout-btn">
+                    <i class="fas fa-sign-out-alt"></i> Выйти
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <header class="page-header">
+            <h1>Создание карточек Wildberries</h1>
+            <p class="subtitle">Выберите товары для создания карточек на маркетплейсе</p>
+        </header>
+
+        <div class="api-key-section">
+            <input type="text" id="apiKey" class="api-key-input" placeholder="Введите API ключ Wildberries">
+            <button class="create-btn" onclick="createWBCards()">
+                <i class="fas fa-plus-circle"></i> Создать выбранные карточки
+            </button>
+        </div>
+
+        <div class="product-list">
+            {% for product in products %}
+            <div class="product-item">
+                <div class="product-image">
+                    {% if product.image %}
+                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                    {% else %}
+                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image">
+                    {% endif %}
+                </div>
+                <div class="product-info">
+                    <div style="display: flex; align-items: center;">
+                        <input type="checkbox" class="product-checkbox"
+                               data-article="{{ product.article }}"
+                               data-name="{{ product.name }}"
+                               data-category="{{ product.category if product.category else '' }}"
+                               data-variants="{{ product.variants|tojson|forceescape }}">
+                        <h3 class="product-title">{{ product.name }}</h3>
+                    </div>
+
+                    <div class="product-meta">
+                        <span class="product-article">Артикул: {{ product.article }}</span>
+                        {% if product.category %}
+                        <span class="product-category"> | Категория: {{ product.category }}
+                            {% if product.category in wb_categories %}
+                            <span class="wb-id">(ID: {{ wb_categories[product.category] }})</span>
+                            {% endif %}
+                        </span>
+                        {% endif %}
+                    </div>
+
+                    <div class="product-variants">
+                        {% for variant in product.variants %}
+                        <div class="variant-item">
+                            <span class="variant-size">
+                                {{ variant['Длина (см)'] }} × {{ variant['Ширина (см)'] }} × {{ variant['Высота (см)'] }} см
+                            </span>
+                            <span class="variant-price">{{ variant['Цена'] }} ₽</span>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+   <script>
+    function createWBCards() {
+        const apiKey = document.getElementById('apiKey').value;
+        if (!apiKey) {
+            alert('Введите API ключ Wildberries');
+            return;
+        }
+
+        const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+        if (checkboxes.length === 0) {
+            alert('Выберите хотя бы один товар');
+            return;
+        }
+
+        const selectedProducts = Array.from(checkboxes).map(checkbox => {
+            // Парсим варианты и добавляем все необходимые поля
+            const variants = JSON.parse(checkbox.dataset.variants).map(variant => {
+                return {
+                    'Артикул': variant.Артикул || variant['Артикул'],
+                    'Длина (см)': variant['Длина (см)'] || 10,
+                    'Ширина (см)': variant['Ширина (см)'] || 10,
+                    'Высота (см)': variant['Высота (см)'] || 10,
+                    'Цена': variant['Цена'] || 0
+                };
+            });
+
+            return {
+                article: checkbox.dataset.article,
+                name: checkbox.dataset.name,
+                category: checkbox.dataset.category,
+                variants: variants
+            };
+        });
+
+        fetch('/create_wb_cards', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                products: selectedProducts,
+                api_key: apiKey
+            })
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(err => Promise.reject(err));
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                alert('Карточки успешно отправлены на создание!');
+                console.log('Ответ сервера:', data.response);
+            } else {
+                alert('Ошибка: ' + data.message);
+                console.error('Ошибка:', data);
+            }
+        })
+        .catch(error => {
+            const errorMsg = error.message || 'Произошла ошибка при отправке данных';
+            alert(errorMsg);
+            console.error('Error:', error);
+        });
+    }
+</script>
+</body>
+</html>
