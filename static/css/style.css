@@ -1,0 +1,115 @@
+/* Основные стили для аутентификации */
+.auth-container {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 2rem;
+    background: #1e1e1e;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-title {
+    color: #bb86fc;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.auth-form .form-group {
+    margin-bottom: 1rem;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: #aaaaaa;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 0.75rem;
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: white;
+}
+
+.auth-form button {
+    width: 100%;
+    padding: 0.75rem;
+    background: #bb86fc;
+    color: black;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: #aaaaaa;
+}
+
+.auth-link a {
+    color: #03dac6;
+    text-decoration: none;
+}
+
+.error-message {
+    color: #ff4444;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+/* Стили для профиля */
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.profile-section {
+    background: #1e1e1e;
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.company-search {
+    margin-top: 1rem;
+}
+
+.company-search input {
+    width: 100%;
+    padding: 0.75rem;
+    background: #333;
+    border: 1px solid #444;
+    border-radius: 5px;
+    color: white;
+    margin-bottom: 1rem;
+}
+
+.company-search button {
+    background: #bb86fc;
+    color: black;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.company-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.company-card {
+    background: #252525;
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
