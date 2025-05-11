@@ -5,6 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Профиль</title>
       <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
         <style>
             :root {
@@ -53,6 +54,22 @@
                 cursor: pointer;
                 font-size: 14px;
             }
+
+            .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
     
             .profile-section {
                 background: var(--light);
@@ -147,6 +164,7 @@
                 border-radius: 8px;
                 padding: 15px;
                 border: 1px solid var(--border);
+                transition: all 0.3s ease;
             }
     
             .company-header {
@@ -239,70 +257,225 @@
             .modal-body p {
                 margin-bottom: 10px;
             }
-            .company-card {
-    /* существующие стили */
-    transition: all 0.3s ease;
-}
-
-        
+            .company-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            }
+            .profile-btn:hover, .logout-btn:hover, .cart-icon:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            }
+            .profile-btn {
+                background: var(--primary);
+                color: white;
+            }
+            .profile-btn, .logout-btn, .nav-btn {
+                color: white;
+                padding: 8px 15px;
+                border-radius: 20px;
+                text-decoration: none;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                transition: all 0.3s ease;
+                border: none;
+                cursor: pointer;
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+            .fa-solid, .fas {
+                font-family: "Font Awesome 6 Free";
+                font-weight: 900;
+            }
+            .btn-deposit {
+                display: inline-block;
+                padding: 10px 20px;
+                background-color: #4CAF50; /* Зеленый цвет */
+                color: white; /* Белый текст */
+                text-align: center;
+                text-decoration: none;
+                border-radius: 5px;
+                transition: background-color 0.3s;
+            }
+            .btn-deposit:hover {
+                background-color: #45a049; /* Более темный зеленый при наведении */
+            }
+            
+            /* Стили для будущих поставщиков */
+            .coming-soon-section {
+                margin-top: 40px;
+            }
+            
+            .coming-soon-title {
+                color: var(--primary);
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            
+            .coming-soon-card {
+                background: #252525;
+                border-radius: 8px;
+                padding: 15px;
+                border: 1px dashed var(--border);
+                opacity: 0.7;
+                position: relative;
+            }
+            
+            .coming-soon-badge {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: var(--primary);
+                color: #000;
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+            }
+            
+            .coming-soon-card .company-name {
+                color: var(--text-muted);
+            }
         </style>
     </head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1>Список поставщиков</h1>
-            <a href="{{ url_for('seller_orders') }}" class="nav-btn">
-                <i class="fas fa-box-open"></i> Мои заказы
-            </a>
-
-            <button class="logout-btn" onclick="window.location.href='{{ url_for('profile') }}'">
-
-
-                <i class="fas fa-arrow-left"></i> Назад
-            </button>
-        </div>
-        
-
-        <div class="suppliers-list">
-            {% if suppliers %}
-            <div class="company-grid">
-                {% for supplier in suppliers %}
-                <div class="company-card">
-                    <div class="company-header">
-                        <h3 class="company-name">{{ supplier.username }}</h3>
-                    </div>
-                    <div class="company-details">
-                        {% if supplier.company_info %}
-                            <p>Компания: {{ supplier.company_info.name }}</p>
-                            <p>ИНН: {{ supplier.company_info.inn }}</p>
-                        {% else %}
-                            <p>Информация о компании не указана</p>
-                        {% endif %}
-                    </div>
-                    <!-- В секции company-grid -->
-{% for supplier in suppliers %}
-<div class="company-card" onclick="window.location.href='{{ url_for('supplier_products', supplier_id=supplier.id) }}'" 
-     style="cursor: pointer;">
-    <div class="company-header">
-        <h3 class="company-name">{{ supplier.username }}</h3>
-    </div>
-    <div class="company-details">
-        {% if supplier.company_info %}
-            <p>Компания: {{ supplier.company_info.name }}</p>
-            <p>ИНН: {{ supplier.company_info.inn }}</p>
-        {% else %}
-            <p>Информация о компании не указана</p>
-        {% endif %}
-    </div>
-</div>
-{% endfor %}
+    <body>
+        <div class="container">
+            <div class="header">
+                <div class="logo-container">
+                    <img src="{{ url_for('static', filename='logo/logo4.png') }}" alt="Логотип" class="logo">
                 </div>
-                {% endfor %}
+                <a href="{{ url_for('seller_orders') }}" class="profile-btn">
+                    <i class="fas fa-box-open"></i> Мои заказы
+                </a>
+                <a href="{{ url_for('orders.show_orders') }}" class="nav-btn" style="background: #d55acc;">
+                    <i class="fas fa-box-open"></i> Заказы
+                </a>
+                <a href="{{ url_for('chats') }}" class="nav-btn" style="background: #9ca168;">
+                    <i class="fas fa-envelope-open-text"></i> Чаты
+                </a>
+                <button class="logout-btn" onclick="window.location.href='{{ url_for('profile') }}'">
+                    <i class="fas fa-arrow-left"></i> Профиль
+                </button>
             </div>
-            {% else %}
-            <p>Нет зарегистрированных поставщиков</p>
-            {% endif %}
+            
+            <div class="suppliers-list">
+                {% if suppliers %}
+                <div class="company-grid">
+                    {% for supplier in suppliers %}
+                    <div class="company-card" onclick="window.location.href='{{ url_for('supplier_products', supplier_id=supplier.id) }}'" 
+                         style="cursor: pointer;">
+                        <div class="company-header">
+                            <h3 class="company-name">{{ supplier.username }}</h3>
+                        </div>
+                        <div class="company-details">
+                            <div class="deposit-info">
+                                <p>Депозит: {{ "%.2f"|format(supplier.deposit_amount) }} ₽</p>
+                                {% if supplier.deposit_amount > 0 %}
+                                <a href="{{ url_for('update_deposit', supplier_id=supplier.id) }}" 
+                                   class="btn-deposit" 
+                                   onclick="event.stopPropagation()">
+                                    Пополнить депозит
+                                </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <p>Нет зарегистрированных поставщиков</p>
+                {% endif %}
+            </div>
+            
+            <!-- Блок "Скоро появится" -->
+            <div class="coming-soon-section">
+                <h2 class="coming-soon-title">
+                    <i class="fas fa-clock"></i> Скоро появится
+                </h2>
+                <div class="company-grid">
+                    <div class="company-card coming-soon-card">
+                        <div class="coming-soon-badge">Скоро</div>
+                        <div class="company-header">
+                            <h3 class="company-name">Sima-Land</h3>
+                        </div>
+                        <div class="company-details">
+                            <p>Товары для всех</p>
+                            <p style="color: var(--secondary); margin-top: 10px;">В ближайшее время</p>
+                        </div>
+                    </div>
+                    
+                    <div class="company-card coming-soon-card">
+                        <div class="coming-soon-badge">Скоро</div>
+                        <div class="company-header">
+                            <h3 class="company-name">Ситрейд</h3>
+                        </div>
+                        <div class="company-details">
+                            <p>Постельное бельё</p>
+                            <p style="color: var(--secondary); margin-top: 10px;">Очень скоро</p>
+                        </div>
+                    </div>
+                    
+                    <div class="company-card coming-soon-card">
+                        <div class="coming-soon-badge">Скоро</div>
+                        <div class="company-header">
+                            <h3 class="company-name">Поставщик счастья</h3>
+                        </div>
+                        <div class="company-details">
+                            <p>Интим товары 18+</p>
+                            <p style="color: var(--secondary); margin-top: 10px;">Тестируем товары, скоро будут</p>
+                        </div>
+                    </div>
+
+                    <div class="company-card coming-soon-card">
+                        <div class="coming-soon-badge">Скоро</div>
+                        <div class="company-header">
+                            <h3 class="company-name">Koryakin</h3>
+                        </div>
+                        <div class="company-details">
+                            <p>Игрушки</p>
+                            <p style="color: var(--secondary); margin-top: 10px;">01.06.2025</p>
+                        </div>
+                    </div>
+
+                    <div class="company-card coming-soon-card">
+                        <div class="coming-soon-badge">Скоро</div>
+                        <div class="company-header">
+                            <h3 class="company-name">Tigershop</h3>
+                        </div>
+                        <div class="company-details">
+                            <p>Одежда для спорта</p>
+                            <p style="color: var(--secondary); margin-top: 10px;">
+
+                                Скоро оденемся по спортивному! Пора завязывать шнурки и готовиться к рекордам</p>
+                        </div>
+                    </div>
+
+                    <div class="company-card coming-soon-card">
+                        <div class="coming-soon-badge">Скоро</div>
+                        <div class="company-header">
+                            <h3 class="company-name">Merlion</h3>
+                        </div>
+                        <div class="company-details">
+                            <p>Электроника и бытовая техника</p>
+                            <p style="color: var(--secondary); margin-top: 10px;">Подключаем к сети электроники и бытовой техники! Готовьте розетки</p>
+                        </div>
+                    </div>
+
+                    <div class="company-card coming-soon-card">
+                        <div class="coming-soon-badge">Скоро</div>
+                        <div class="company-header">
+                            <h3 class="company-name">Fresh</h3>
+                        </div>
+                        <div class="company-details">
+                            <p>Серебряные украшения</p>
+                            <p style="color: var(--secondary); margin-top: 10px;">Без золота обойдёмся, зато серебра хватит на всех</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </div>
-</body>
+    </body>
 </html>
