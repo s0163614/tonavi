@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Пополнение депозита</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #bb86fc;
+            --secondary: #03dac6;
+            --dark: #121212;
+            --light: #1e1e1e;
+            --text: #ffffff;
+            --text-muted: #aaaaaa;
+            --border: rgba(255, 255, 255, 0.1);
+            --success: #00c853;
+            --warning: #ffab00;
+            --error: #ff4444;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--dark);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 20px;
+            margin-top: 80px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Шапка */
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--dark), var(--dark));
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .profile-btn, .logout-btn, .nav-btn {
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .profile-btn {
+            background: var(--primary);
+        }
+
+        .logout-btn {
+            background: var(--error);
+        }
+
+        .nav-btn {
+            background: #ff9800;
+        }
+
+        /* Основной контент */
+        .deposit-card {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 30px;
+            border: 1px solid var(--border);
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input[type="number"] {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--dark);
+            border: 1px solid var(--border);
+            border-radius: 5px;
+            color: var(--text);
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border-radius: 5px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            border: none;
+            transition: all 0.3s ease;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn-success {
+            background: var(--success);
+            color: #000;
+        }
+
+        .btn-success:hover {
+            background: #00b248;
+            transform: translateY(-2px);
+        }
+
+        .current-deposit {
+            margin-top: 25px;
+            padding: 20px;
+            background: var(--light);
+            border-radius: 10px;
+            text-align: center;
+            font-size: 1.1rem;
+            border: 1px solid var(--border);
+        }
+
+        .current-deposit p {
+            margin: 0;
+            color: var(--secondary);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <div class="header-wrapper">
+        <div class="main-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo/logo4.png') }}" alt="Логотип" class="logo">
+            </div>
+            
+            <div class="header-actions">
+                <a href="{{ url_for('profile') }}" class="profile-btn">
+                    <i class="fas fa-user"></i> Профиль
+                </a>
+                <a href="{{ url_for('wb_cards') }}" class="nav-btn">
+                    <i class="fas fa-shopping-bag"></i> WB Карточки
+                </a>
+                <form action="{{ url_for('login') }}" method="POST" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="container">
+        <h1>Пополнение депозита</h1>
+        
+        <div class="deposit-card">
+            <div class="supplier-info">
+                <div class="order-detail">
+                    <span class="detail-label">Поставщик:</span>
+                    <span>{{ supplier.username }}</span>
+                </div>
+                
+            </div>
+
+            <form method="POST">
+                <div class="form-group">
+                    <label for="deposit_amount">
+                         Сумма пополнения:
+                    </label>
+                    <input type="number" 
+                           id="deposit_amount" 
+                           name="deposit_amount" 
+                           step="0.01" 
+                           required
+                           placeholder="Введите сумму в рублях">
+                </div>
+                <button type="submit" class="btn btn-success">
+                    <i class="fas fa-wallet"></i> Пополнить депозит
+                </button>
+            </form>
+
+            <div class="current-deposit">
+                <p>
+                    <i class="fas fa-coins"></i> 
+                    Текущий депозит: {{ "%.2f"|format(supplier.deposit_amount) }} ₽
+                </p>
+            </div>
+
+            
+        </div>
+    </div>
+</body>
+</html>
