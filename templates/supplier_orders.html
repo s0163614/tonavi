@@ -20,6 +20,21 @@
             --warning: #ffab00;
             --error: #ff4444;
         }
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
 
         body {
             font-family: 'Montserrat', sans-serif;
@@ -27,6 +42,7 @@
             color: var(--text);
             line-height: 1.6;
             padding: 20px;
+            margin-top: 80px; /* Добавлено для фиксированного хедера */
         }
 
         .container {
@@ -38,6 +54,7 @@
             color: var(--primary);
             margin-bottom: 30px;
             text-align: center;
+            padding-top: 20px; /* Добавлено для отступа от хедера */
         }
 
         .orders-list {
@@ -95,6 +112,7 @@
         .order-detail {
             display: flex;
             margin-bottom: 8px;
+            align-items: center; /* Добавлено для выравнивания кнопки */
         }
 
         .detail-label {
@@ -154,24 +172,140 @@
             margin-bottom: 20px;
         }
         .alert-message {
-    padding: 10px;
-    margin-top: 10px;
-    border-radius: 5px;
-    display: none;
-}
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 5px;
+            display: none;
+        }
 
-.alert-success {
-    background: var(--success);
-    color: #000;
-}
+        .alert-success {
+            background: var(--success);
+            color: #000;
+        }
 
-.alert-error {
-    background: var(--error);
-    color: #fff;
-}
-    </style>
+        .alert-error {
+            background: var(--error);
+            color: #fff;
+        }
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px 0;
+            position: relative;
+        }
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .header-wrapper {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(135deg, var(--dark), var(--dark));
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .main-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .btn-deposit {
+            padding: 6px 12px; /* Уменьшенный размер */
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            font-size: 0.85rem; /* Уменьшенный размер шрифта */
+            margin-left: 10px; /* Отступ от текста */
+        }
+        .btn-deposit:hover {
+            background-color: #45a049;
+        }
+        
+        /* Новый стиль для контейнера депозита */
+        .deposit-container {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 5px;
+        }
+        .logout-btn {
+            background: var(--error);
+            color: white;
+        }
+        .profile-btn, .logout-btn, .nav-btn {
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .profile-btn {
+            background: var(--primary);
+            color: white;
+        }
+
+        .profile-section {
+            background: var(--light);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .profile-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+</style>
 </head>
 <body>
+
+    <div class="header-wrapper">
+        <div class="main-header">
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo/logo4.png') }}" alt="Логотип" class="logo">
+                
+            </div>
+            
+            <div class="header-actions">
+                <a href="{{ url_for('profile') }}" class="profile-btn">
+                    <i class="fas fa-user"></i> Профиль
+                </a>
+                <!-- Добавить рядом с другими кнопками в header-actions -->
+                <a href="{{ url_for('wb_cards') }}" class="nav-btn" style="background: #ff9800;">
+                    <i class="fas fa-shopping-bag"></i> WB Карточки
+                </a>
+                
+                
+                <form action="{{ url_for('login') }}" method="POST" style="display: inline;">
+                    <button type="submit" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i> Выйти
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <h1>Мои заказы</h1>
         
@@ -195,17 +329,24 @@
                     </div>
                     <div class="order-detail">
                         <span class="detail-label">Дата создания: </span>
-                        <span>{{ order.created_at }}</span>
+                        <span>{{ order.created_at_formatted }}</span>
                     </div>
                     {% if order.confirmed_at %}
                     <div class="order-detail">
                         <span class="detail-label">Дата подтверждения: </span>
-                        <span>{{ order.confirmed_at }}</span>
+                        <span>{{ order.confirmed_at_formatted }}</span>
                     </div>
                     {% endif %}
                     <div class="order-detail">
                         <span class="detail-label">Сумма:</span>
                         <span>{{ "%.2f"|format(order.total) }} ₽</span>
+                    </div>
+                    <div class="order-detail">
+                        <span class="detail-label">Депозит продавца: {{ "%.2f"|format(order.seller_deposit or 0) }} ₽</span>
+                        
+                        {% if order.seller_deposit > 0 %}
+                        <a href="{{ url_for('reduce_deposit', seller_id=order.seller_id) }}" class="btn btn-deposit">Уменьшить депозит</a>
+                        {% endif %}
                     </div>
                 </div>
                 
@@ -248,10 +389,6 @@
         </div>
         {% endif %}
     </div>
-
-    <script>
-    // Add any JavaScript functionality here if needed
-    </script>
 </body>
 </html>
 <!-- In checkout.html, replace the script section with: -->
