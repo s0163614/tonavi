@@ -54,6 +54,27 @@
             font-size: 14px;
         }
 
+        .profile-btn, .logout-btn, .nav-btn {
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .profile-btn {
+            background: var(--primary);
+            color: white;
+        }
+
         .profile-section {
             background: var(--light);
             border-radius: 10px;
@@ -239,12 +260,57 @@
         .modal-body p {
             margin-bottom: 10px;
         }
+        .logout-btn {
+                background: #ff4444;
+                color: white;
+                border: none;
+                padding: 8px 16px;
+                border-radius: 5px;
+                cursor: pointer;
+                font-size: 14px;
+            }
+
+            .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo {
+            height: 40px;
+            width: auto;
+            transition: transform 0.3s ease;
+        }
+
+        .logo:hover {
+            transform: scale(1.05);
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <h1>Профиль пользователя</h1>
+            <div class="logo-container">
+                <img src="{{ url_for('static', filename='logo/logo4.png') }}" alt="Логотип" class="logo">
+                
+            </div>
+                {% if not user.post %}
+                <div class="header-actions" style="grid-column: span 2;">
+                    <a href="{{ url_for('suppliers_list') }}" 
+                    class="profile-btn">
+                        <i class="fas fa-users"></i> Список поставщиков
+                    </a>
+                </div>
+                {% endif %}
+
+                {% if user.post %}
+                    <div class="header-actions" style="grid-column: span 2;">
+                        <a href="{{ url_for('index') }}" class="profile-btn">
+                            <i class="fas fa-users"></i> Главная
+                        </a>
+                    </div>
+                {% endif %}
+
             <button class="logout-btn" onclick="window.location.href='{{ url_for('login') }}'">
                 <i class="fas fa-sign-out-alt"></i> Выйти
             </button>
@@ -257,6 +323,15 @@
                     <div class="info-label">Логин</div>
                     <div class="info-value">{{ user.username }}</div>
                 </div>
+                
+                 <div class="info-item">
+                    <div class="info-label">API Key</div>
+                    <input type="text" id="apiKeyInput" value="{{ user.api_key or '' }}" style="width: 100%; padding: 8px; background: #333; border: 1px solid #444; color: var(--text);">
+                    <button onclick="saveApiKey()" style="margin-top: 10px; background: var(--primary); color: #000; border: none; padding: 8px 16px; border-radius: 5px; cursor: pointer;">
+                        <i class="fas fa-save"></i> Сохранить API Key
+                    </button>
+                </div>
+                
                 <div class="info-item">
                     <div class="info-label">Счет</div>
                     <textarea id="userInfoTextarea" style="width: 100%; min-height: 100px; background: #333; border: 1px solid #444; color: var(--text); padding: 10px;">{{ user.user_info or '' }}</textarea>
@@ -264,14 +339,7 @@
                         <i class="fas fa-save"></i> Сохранить информацию
                     </button>
                 </div>
-                {% if not user.post %}
-                <div class="info-item" style="grid-column: span 2;">
-                    <a href="{{ url_for('suppliers_list') }}" 
-                    class="suppliers-button">
-                        <i class="fas fa-users"></i> Список поставщиков
-                    </a>
-                </div>
-                {% endif %}
+                
                 {% if user.company_info %}
                 <div class="info-item">
                     <div class="info-label">Компания</div>
@@ -537,6 +605,36 @@
         function hideModal() {
             document.getElementById('companyModal').classList.remove('active');
         }
+        
+    
+    function saveApiKey() {
+    const apiKey = document.getElementById('apiKeyInput').value.trim();
+    
+    fetch('/save_api_key', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `api_key=${encodeURIComponent(apiKey)}`
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            alert('API-ключ успешно сохранен');
+        } else {
+            alert(data.message || 'Ошибка при сохранении API-ключа');
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Произошла ошибка: ' + error.message);
+    });
+}
     </script>
 <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
