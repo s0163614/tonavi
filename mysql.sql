@@ -6,7 +6,9 @@ CREATE TABLE users (
     saved_companies JSON,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     post BOOLEAN DEFAULT FALSE,
-user_info varchar(100)
+    user_info varchar(100),
+    api_key varchar(255),
+    sent_amount varchar(255)
 );
 
 
