@@ -6,6 +6,7 @@
     <title>Создание карточек WB</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js"></script>
     <style>
         :root {
             --primary: #7c4dff;
@@ -284,12 +285,11 @@
 </head>
 <body>
     <div class="header-wrapper">
+        <!-- Остается без изменений -->
         <div class="main-header">
             <div class="logo-container">
                 <img src="{{ url_for('static', filename='logo/logo4.png') }}" alt="Логотип" class="logo">
-                
             </div>
-
             <div class="header-actions">
                 <a href="{{ url_for('index') }}" class="nav-btn back-btn">
                     <i class="fas fa-arrow-left"></i> На главную
@@ -309,23 +309,64 @@
 
         <div class="api-key-section">
             <input type="text" id="apiKey" class="api-key-input" placeholder="Введите API ключ Wildberries">
+            
+            <!-- Добавленные глобальные настройки -->
+            <div class="global-settings" style="margin:15px 0; display:grid; grid-template-columns:repeat(auto-fit, minmax(200px,1fr)); gap:20px;">
+                <div>
+                    <label style="display:block; margin-bottom:8px; color:var(--text-muted);">Налог (%)</label>
+                    <input type="number" id="globalTax" value="7" step="0.1" 
+                           class="api-key-input" style="margin:0;"
+                           onchange="recalculateAllPrices()">
+                </div>
+                <div>
+                    <label style="display:block; margin-bottom:8px; color:var(--text-muted);">Лимит карточек</label>
+                    <div style="background:#2c2c2c; padding:12px; border-radius:6px;">
+                        <label style="color:var(--text-muted); cursor:pointer;">
+                            <input type="checkbox" id="globalLimit" checked 
+                                   onchange="recalculateAllPrices()">
+                            Включить лимит
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:10px; display:flex; gap:10px; flex-wrap:wrap;">
+                <button class="create-btn" onclick="exportTemplate()">
+                    <i class="fas fa-file-export"></i> Скачать шаблон
+                </button>
+                <label class="create-btn" style="cursor:pointer;">
+                    <i class="fas fa-file-upload"></i> Загрузить Excel
+                    <input type="file" id="excelFile" accept=".xlsx" hidden onchange="uploadTemplate()">
+                </label>
+            </div>
             <button class="create-btn" onclick="createWBCards()">
                 <i class="fas fa-plus-circle"></i> Создать выбранные карточки
             </button>
         </div>
+
+        <label><input type="checkbox" id="selectAll" onchange="toggleAllProducts(this)"> Выбрать все</label>
+
+<script>function toggleAllProducts(checkbox) {
+    const items = document.querySelectorAll('.product-checkbox');
+    items.forEach(cb => cb.checked = checkbox.checked);
+}</script>
+
 
         <div class="product-list">
             {% for product in products %}
             <div class="product-item">
                 <div class="product-image">
                     {% if product.image %}
-                    <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
+                        <img src="{{ product.image }}" alt="{{ product.name }}"
+                             onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}'">
                     {% else %}
-                    <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image">
+                        <div class="no-image" style="background:#2a2a2a; height:100%; display:flex; align-items:center; justify-content:center;">
+                            <i class="fas fa-image" style="font-size:2rem; color:#444;"></i>
+                        </div>
                     {% endif %}
                 </div>
                 <div class="product-info">
-                    <div style="display: flex; align-items: center;">
+                    <div style="display:flex; align-items:center;">
                         <input type="checkbox" class="product-checkbox"
                                data-article="{{ product.article }}"
                                data-name="{{ product.name }}"
@@ -333,7 +374,6 @@
                                data-variants="{{ product.variants|tojson|forceescape }}">
                         <h3 class="product-title">{{ product.name }}</h3>
                     </div>
-
                     <div class="product-meta">
                         <span class="product-article">Артикул: {{ product.article }}</span>
                         {% if product.category %}
@@ -344,87 +384,234 @@
                         </span>
                         {% endif %}
                     </div>
-
                     <div class="product-variants">
-                        {% for variant in product.variants %}
-                        <div class="variant-item">
-                            <span class="variant-size">
-                                {{ variant['Длина (см)'] }} × {{ variant['Ширина (см)'] }} × {{ variant['Высота (см)'] }} см
-                            </span>
-                            <span class="variant-price">{{ variant['Цена'] }} ₽</span>
-                        </div>
-                        {% endfor %}
-                    </div>
+    {% for variant in product.variants %}
+    <div class="variant-item">
+        <span class="variant-size">
+            {{ variant['Длина (см)'] }} × {{ variant['Ширина (см)'] }} × {{ variant['Высота (см)'] }} см
+        </span>
+        <div class="price-controls">
+            <div class="input-group">
+                <label>Цена:</label>
+                <span class="base-price-display" 
+                      data-price="{{ variant['Цена'] }}"
+                      data-length="{{ variant['Длина (см)'] }}"
+                      data-width="{{ variant['Ширина (см)'] }}"
+                      data-height="{{ variant['Высота (см)'] }}">
+                    {{ variant['Цена'] }} ₽
+                </span>
+            </div>
+        </div>
+        <div class="price-results">
+            <div>Фин. цена: <span class="final-price">0</span> ₽</div>
+            <div class="margin-control">
+                <span class="margin-display" onclick="toggleMarginEdit(this)">
+                    Маржа: <span class="margin-value">20.0</span>%
+                    <i class="fas fa-pencil-alt edit-icon"></i>
+                </span>
+                <input type="number" class="margin-input" value="20.0" step="0.1" 
+                       style="display: none;" 
+                       onblur="updateMargin(this)">
+            </div>
+            <div>Прибыль: <span class="profit">0</span> ₽</div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
                 </div>
             </div>
             {% endfor %}
         </div>
     </div>
+<script>
+    // Глобальный пересчет всех цен
+    function recalculateAllPrices() {
+        document.querySelectorAll('.variant-item').forEach(item => {
+            const basePrice = parseFloat(item.querySelector('.base-price-display').dataset.price) || 0;
+            const margin = parseFloat(item.querySelector('.margin-input').value)/100; // Убрано дефолтное значение
+            calculateVariantPrices(item, basePrice, margin);
+        });
+    }
 
-   <script>
-    function createWBCards() {
+    // Основная функция расчета
+    function calculateVariantPrices(variantItem, basePrice, margin) {
+        const dimensions = {
+            length: parseFloat(variantItem.querySelector('.base-price-display').dataset.length) || 10,
+            width: parseFloat(variantItem.querySelector('.base-price-display').dataset.width) || 10,
+            height: parseFloat(variantItem.querySelector('.base-price-display').dataset.height) || 10
+        };
+        
+        // Параметры формулы
+        const AE2 = 60;
+        const AC2 = 0.9;
+        const K2 = document.getElementById('globalLimit').checked ? 0.02 : 0;
+        const AF2 = 0.015;
+        const AG2 = 0.015;
+        const L2 = margin;
+        const tax = parseFloat(document.getElementById('globalTax').value)/100 || 0.07;
+        
+        // Рассчет стоимости логистики
+        const volume = (dimensions.length * dimensions.width * dimensions.height)/1000;
+        const ab2 = 43.75 + 10.625*(Math.ceil(volume)-1);
+        const ad2 = (ab2 + (50*(1-AC2)))/AC2;
+        
+        // Рассчет финальной цены
+        const commission = 0.165;
+        const denominator = 1 - tax - K2 - AF2 - AG2 - commission - L2;
+        const finalPrice = Math.round((basePrice + AE2 + ad2)/denominator);
+        
+        // Рассчет прибыли
+        const profit = finalPrice*L2;
+        
+        // Обновление интерфейса
+        variantItem.querySelector('.final-price').textContent = finalPrice;
+        variantItem.querySelector('.margin-value').textContent = (L2*100).toFixed(1);
+        variantItem.querySelector('.profit').textContent = profit;
+    }
+
+    // Управление маржой
+    function toggleMarginEdit(element) {
+        const container = element.closest('.margin-control');
+        container.querySelector('.margin-display').style.display = 'none';
+        const input = container.querySelector('.margin-input');
+        input.style.display = 'inline-block';
+        input.focus();
+    }
+
+    function updateMargin(input) {
+        const container = input.closest('.margin-control');
+        const value = parseFloat(input.value) || 20.0;
+        const variantItem = container.closest('.variant-item');
+        
+        input.value = value.toFixed(1);
+        container.querySelector('.margin-value').textContent = value.toFixed(1);
+        container.querySelector('.margin-display').style.display = 'inline';
+        input.style.display = 'none';
+        
+        const basePrice = parseFloat(variantItem.querySelector('.base-price-display').dataset.price) || 0;
+        calculateVariantPrices(variantItem, basePrice, value/100);
+        recalculateAllPrices(); // Добавлен принудительный пересчет
+    }
+
+    // Инициализация при загрузке (исправлена инициализация)
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.margin-input').forEach(input => {
+            if (!input.value) input.value = '20.0'; // Устанавливаем только если пусто
+        });
+        recalculateAllPrices();
+    });
+
+    // Обновленная функция создания карточек
+      async function createWBCards() {
         const apiKey = document.getElementById('apiKey').value;
-        if (!apiKey) {
-            alert('Введите API ключ Wildberries');
-            return;
-        }
+        if (!apiKey) return alert('Введите API ключ Wildberries');
 
         const checkboxes = document.querySelectorAll('.product-checkbox:checked');
-        if (checkboxes.length === 0) {
-            alert('Выберите хотя бы один товар');
-            return;
-        }
+        if (checkboxes.length === 0) return alert('Выберите товары');
 
-        const selectedProducts = Array.from(checkboxes).map(checkbox => {
-            // Парсим варианты и добавляем все необходимые поля
-            const variants = JSON.parse(checkbox.dataset.variants).map(variant => {
-                return {
-                    'Артикул': variant.Артикул || variant['Артикул'],
-                    'Длина (см)': variant['Длина (см)'] || 10,
-                    'Ширина (см)': variant['Ширина (см)'] || 10,
-                    'Высота (см)': variant['Высота (см)'] || 10,
-                    'Цена': variant['Цена'] || 0
-                };
-            });
-
-            return {
+        try {
+            const selectedProducts = Array.from(checkboxes).map(checkbox => ({
                 article: checkbox.dataset.article,
                 name: checkbox.dataset.name,
                 category: checkbox.dataset.category,
-                variants: variants
-            };
-        });
+                variants: Array.from(checkbox.closest('.product-item').querySelectorAll('.variant-item')).map(variant => ({
+                    'Артикул': checkbox.dataset.article, // Берем из родительского элемента
+                    'Длина (см)': parseFloat(variant.querySelector('.base-price-display').dataset.length),
+                    'Ширина (см)': parseFloat(variant.querySelector('.base-price-display').dataset.width),
+                    'Высота (см)': parseFloat(variant.querySelector('.base-price-display').dataset.height),
+                    'Цена': parseFloat(variant.querySelector('.base-price-display').dataset.price),
+                    'Маржа': parseFloat(variant.querySelector('.margin-input').value)/100,
+                    'Налог': parseFloat(document.getElementById('globalTax').value)/100,
+                    'Лимит': document.getElementById('globalLimit').checked
+                }))
+            }));
 
-        fetch('/create_wb_cards', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                products: selectedProducts,
-                api_key: apiKey
-            })
-        })
-        .then(response => {
-            if (!response.ok) {
-                return response.json().then(err => Promise.reject(err));
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.success) {
-                alert('Карточки успешно отправлены на создание!');
-                console.log('Ответ сервера:', data.response);
-            } else {
-                alert('Ошибка: ' + data.message);
-                console.error('Ошибка:', data);
-            }
-        })
-        .catch(error => {
-            const errorMsg = error.message || 'Произошла ошибка при отправке данных';
-            alert(errorMsg);
-            console.error('Error:', error);
-        });
+            const response = await fetch('/create_wb_cards', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({products: selectedProducts, api_key: apiKey})
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Ошибка сервера');
+
+            alert('Карточки успешно созданы!');
+            console.log('Ответ сервера:', data.response);
+        } catch (error) {
+            alert(error.message);
+            console.error('Ошибка:', error);
+        }
+    }
+
+    // Экспорт шаблона
+    async function exportTemplate() {
+        try {
+            const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+            if (checkboxes.length === 0) throw new Error('Выберите товары');
+
+            const selectedProducts = Array.from(checkboxes).map(checkbox => ({
+                article: checkbox.dataset.article,
+                name: checkbox.dataset.name,
+                category: checkbox.dataset.category,
+                variants: JSON.parse(checkbox.dataset.variants).map(v => ({
+                    'Артикул': v.Артикул,
+                    'Длина (см)': v['Длина (см)'] || 10,
+                    'Ширина (см)': v['Ширина (см)'] || 10,
+                    'Высота (см)': v['Высота (см)'] || 10,
+                    'Цена': v['Цена'] || 0
+                }))
+            }));
+
+            const response = await fetch('/export_wb_template', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({products: selectedProducts})
+            });
+
+            if (!response.ok) throw new Error('Ошибка экспорта');
+            
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "Шаблон_WB.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            alert(error.message);
+            console.error(error);
+        }
+    }
+
+    // Загрузка Excel
+    async function uploadTemplate() {
+        try {
+            const file = document.getElementById('excelFile').files[0];
+            const apiKey = document.getElementById('apiKey').value;
+            
+            if (!file) throw new Error('Выберите файл');
+            if (!apiKey) throw new Error('Введите API ключ');
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('api_key', apiKey);
+
+            const response = await fetch('/create_from_template', {
+                method: 'POST',
+                body: formData
+            });
+
+            const data = await response.json();
+            if (!response.ok) throw new Error(data.message || 'Ошибка сервера');
+
+            alert('Карточки созданы из шаблона!');
+            console.log('Ответ:', data.response);
+        } catch (error) {
+            alert(error.message);
+            console.error(error);
+        }
     }
 </script>
 </body>
