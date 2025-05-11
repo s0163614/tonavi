@@ -7,6 +7,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Каталог товаров</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
@@ -99,7 +100,7 @@
             align-items: center;
         }
 
-        .profile-btn, .logout-btn {
+        .profile-btn, .logout-btn, .nav-btn {
             color: white;
             padding: 8px 15px;
             border-radius: 20px;
@@ -126,7 +127,7 @@
         }
 
         .cart-icon {
-            background: var(--secondary);
+            background: #0db130;
             color: #000;
             width: 40px;
             height: 40px;
@@ -441,6 +442,505 @@
         max-width: 500px;
         margin: 0 auto;
     }
+    .fa-solid, .fas {
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+}
+.fa, .fa-brands, .fa-duotone, .fa-light, .fa-regular, .fa-solid, .fa-thin, .fab, .fad, .fal, .far, .fas, .fat {
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    display: var(--fa-display, inline-block);
+    font-style: normal;
+    font-variant: normal;
+    line-height: 1;
+    text-rendering: auto;
+}
+        .product-description {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+
+.product-weight {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 15px;
+}
+
+         .product-description {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+        font-size: 0.9rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+        margin-bottom: 0;
+    }
+
+    .description-toggle {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        cursor: pointer;
+        color: var(--primary-light);
+        font-weight: 500;
+        margin: 10px 0;
+        user-select: none;
+    }
+
+    .description-toggle:hover {
+        color: var(--primary);
+    }
+
+    .description-toggle i {
+        transition: transform 0.3s ease;
+    }
+
+    .description-toggle.active i {
+        transform: rotate(180deg);
+    }
+
+    .product-description.expanded {
+        max-height: 500px; /* Достаточно для большинства описаний */
+        margin-bottom: 10px;
+    }
+
+    .product-meta-item {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 0.9rem;
+    }
+
+    .product-meta-label {
+        color: var(--text-muted);
+    }
+
+    .product-meta-value {
+        color: var(--text);
+        font-weight: 500;
+    }
+/* Стили для поисковой строки */
+.search-container {
+    max-width: 600px;
+    margin: 0 auto 30px;
+    position: relative;
+}
+
+.search-form {
+    width: 100%;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--dark-light);
+    border-radius: 30px;
+    padding: 5px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border);
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 4px 20px rgba(124, 77, 255, 0.2);
+}
+
+.search-input {
+    flex: 1;
+    padding: 12px 20px;
+    border: none;
+    background: transparent;
+    color: var(--text);
+    font-size: 1rem;
+    outline: none;
+    border-radius: 25px 0 0 25px;
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.search-btn {
+    width: 50px;
+    height: 50px;
+    border: none;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    margin-left: 5px;
+}
+
+.search-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
+}
+
+.search-btn i {
+    font-size: 1.1rem;
+}
+
+/* Анимация при фокусе */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(124, 77, 255, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(124, 77, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(124, 77, 255, 0); }
+}
+
+.search-input:focus + .search-btn {
+    animation: pulse 1.5s infinite;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .search-container {
+        margin: 0 auto 20px;
+        padding: 0 15px;
+    }
+    
+    .search-input {
+        padding: 10px 15px;
+        font-size: 0.9rem;
+    }
+    
+    .search-btn {
+        width: 45px;
+        height: 45px;
+    }
+}
+.search-section {
+    margin: 0 auto 40px;
+    max-width: 1200px;
+    padding: 0 20px;
+}
+
+.search-card {
+    background: linear-gradient(145deg, #1e1e1e, #2a2a2a);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border: 1px solid rgba(124, 77, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.search-card:hover {
+    border-color: rgba(124, 77, 255, 0.3);
+    box-shadow: 0 8px 40px rgba(124, 77, 255, 0.2);
+}
+
+/* Стили для поисковой строки */
+.search-input-container {
+    display: flex;
+    align-items: center;
+    background: #2a2a2a;
+    border-radius: 12px;
+    padding: 5px 5px 5px 20px;
+    border: 1px solid #3a3a3a;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    margin-bottom: 20px;
+}
+
+.search-input-container:focus-within {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(124, 77, 255, 0.2);
+}
+
+.search-icon {
+    color: var(--text-muted);
+    margin-right: 12px;
+    font-size: 1.1rem;
+}
+
+.search-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    color: var(--text);
+    font-size: 1rem;
+    padding: 12px 0;
+    outline: none;
+}
+
+.search-input::placeholder {
+    color: var(--text-muted);
+    opacity: 0.7;
+}
+
+.search-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.search-button:hover {
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
+}
+
+.search-button i {
+    transition: transform 0.3s ease;
+}
+
+.search-button:hover i {
+    transform: translateX(3px);
+}
+
+/* Стили для аккордеона фильтров */
+.filters-accordion {
+    background: #2a2a2a;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #3a3a3a;
+}
+
+.filter-header {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    cursor: pointer;
+    user-select: none;
+    background: rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.filter-header:hover {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.filter-header i:first-child {
+    margin-right: 12px;
+    color: var(--primary);
+}
+
+.filter-header span {
+    flex: 1;
+    font-weight: 600;
+}
+
+.accordion-arrow {
+    transition: transform 0.3s ease;
+}
+
+.filter-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.filters-accordion.active .filter-content {
+    max-height: 500px;
+    padding: 15px 20px;
+}
+
+.filters-accordion.active .accordion-arrow {
+    transform: rotate(180deg);
+}
+
+/* Стили для фильтра категорий */
+.filter-group {
+    margin-bottom: 20px;
+}
+
+.filter-title {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: var(--text);
+}
+
+.filter-title i {
+    margin-right: 10px;
+    color: var(--primary);
+}
+
+.category-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 10px;
+}
+
+.category-checkbox-label {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: #3a3a3a;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.category-checkbox-label:hover {
+    background: #4a4a4a;
+    transform: translateY(-2px);
+}
+
+.category-checkbox-label input {
+    position: absolute;
+    opacity: 0;
+}
+
+.custom-checkbox {
+    width: 18px;
+    height: 18px;
+    border: 2px solid var(--text-muted);
+    border-radius: 4px;
+    margin-right: 10px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.category-checkbox-label input:checked ~ .custom-checkbox {
+    background: var(--primary);
+    border-color: var(--primary);
+}
+
+.custom-checkbox::after {
+    content: "\f00c";
+    font-family: "Font Awesome 6 Free";
+    font-weight: 900;
+    color: white;
+    font-size: 10px;
+    display: none;
+}
+
+.category-checkbox-label input:checked ~ .custom-checkbox::after {
+    display: block;
+}
+
+.category-name {
+    flex: 1;
+    font-size: 0.9rem;
+}
+
+.category-count {
+    background: #2a2a2a;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+/* Кнопки фильтров */
+.filter-actions {
+    display: flex;
+    gap: 10px;
+    margin-top: 20px;
+    padding-top: 15px;
+    border-top: 1px solid #3a3a3a;
+}
+
+.apply-filters, .reset-filters {
+    flex: 1;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.apply-filters {
+    background: var(--primary);
+    color: white;
+    border: none;
+}
+
+.apply-filters:hover {
+    background: var(--primary-light);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(124, 77, 255, 0.3);
+}
+
+.reset-filters {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid #3a3a3a;
+}
+
+.reset-filters:hover {
+    background: #3a3a3a;
+    color: var(--text);
+    border-color: #4a4a4a;
+}
+
+/* Анимации */
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(124, 77, 255, 0.4); }
+    70% { box-shadow: 0 0 0 10px rgba(124, 77, 255, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(124, 77, 255, 0); }
+}
+
+.search-input:focus ~ .search-button {
+    animation: pulse 1.5s infinite;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+    .search-section {
+        padding: 0 15px;
+    }
+    
+    .search-input-container {
+        flex-direction: column;
+        align-items: stretch;
+        padding: 0;
+    }
+    
+    .search-input {
+        padding: 12px 15px;
+    }
+    
+    .search-button {
+        border-radius: 0 0 8px 8px;
+        justify-content: center;
+        padding: 12px;
+    }
+    
+    .category-grid {
+        grid-template-columns: 1fr;
+    }
+}
+.unread-badge {
+    background: var(--secondary);
+    color: #000;
+    border-radius: 12px;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-left: 8px;
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
 </style>
 </head>
 <body>
@@ -448,10 +948,11 @@
         <div class="main-header">
             <div class="logo-container">
                 <img src="{{ url_for('static', filename='logo/logo4.png') }}" alt="Логотип" class="logo">
-                
+
             </div>
-            
+
             <div class="header-actions">
+                
                 <a href="{{ url_for('profile') }}" class="profile-btn">
                     <i class="fas fa-user"></i> Профиль
                 </a>
@@ -464,15 +965,22 @@
                     <i class="fas fa-user"></i> Мои заказы
                 </a>
                 {% endif %}
+                
+                
+                <a href="{{ url_for('orders.show_orders') }}" class="nav-btn" style="background: #d55acc;">
+                    <i class="fas fa-box-open"></i> Заказы
+                </a>
+                
+                <a href="{{ url_for('chats') }}" class="nav-btn" style="background: #9ca168;">
+                    <i class="fas fa-envelope-open-text"></i> Чаты
+                </a>
+                
                 <a href="{{ url_for('view_cart') }}" class="cart-icon">
                     <i class="fas fa-shopping-cart"></i>
                     <span class="cart-count" id="cart-count">{{ session.cart|length if 'cart' in session else 0 }}</span>
                 </a>
-                <form action="{{ url_for('login') }}" method="POST" style="display: inline;">
-                    <button type="submit" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i> Выйти
-                    </button>
-                </form>
+                
+                
             </div>
         </div>
     </div>
@@ -482,54 +990,207 @@
             <h1>Каталог товаров</h1>
             <p class="subtitle">Лучшие товары по выгодным ценам</p>
         </header>
+        <div class="search-section">
+    <div class="search-container">
+        <!-- Поисковая строка с эффектом неонового свечения -->
+        <div class="search-card">
+            <form action="{{ url_for('search_products') }}" method="GET" class="search-form">
+                <div class="search-input-container">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" 
+                           name="query" 
+                           class="search-input" 
+                           placeholder="Поиск товаров..." 
+                           value="{{ request.args.get('query', '') }}"
+                           aria-label="Поиск товаров">
+                    <button type="submit" class="search-button">
+                        <span>Найти</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+            
+            <!-- Фильтр категорий в стиле аккордеона -->
+            <div class="filters-accordion">
+                <div class="filter-header">
+                    <i class="fas fa-sliders-h"></i>
+                    <span>Фильтры</span>
+                    <i class="fas fa-chevron-down accordion-arrow"></i>
+                </div>
+                
+                <div class="filter-content">
+                    <!-- Категории с кастомными чекбоксами -->
+                    <div class="filter-group">
+                        <h4 class="filter-title">
+                            <i class="fas fa-tags"></i>
+                            Категории
+                        </h4>
+                        <div class="category-grid">
+                            {% for category in all_categories %}
+                            <label class="category-checkbox-label">
+                                <input type="checkbox" 
+                                       name="category" 
+                                       value="{{ category }}"
+                                       {% if category in selected_categories %}checked{% endif %}>
+                                <span class="custom-checkbox"></span>
+                                <span class="category-name">{{ category }}</span>
+                                <span class="category-count">{{ products|selectattr('category', 'equalto', category)|list|length }}</span>
+                            </label>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    
+                    <!-- Кнопки действий -->
+                    <div class="filter-actions">
+                        <button type="button" class="apply-filters">
+                            <i class="fas fa-check"></i> Применить
+                        </button>
+                        <button type="button" class="reset-filters">
+                            <i class="fas fa-times"></i> Сбросить
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+        
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Анимация аккордеона
+    const accordionHeader = document.querySelector('.filter-header');
+    const accordion = document.querySelector('.filters-accordion');
     
+    if (accordionHeader) {
+        accordionHeader.addEventListener('click', function() {
+            accordion.classList.toggle('active');
+        });
+    }
+    
+    // Применение фильтров при изменении чекбоксов
+    const checkboxes = document.querySelectorAll('.category-checkbox-label input');
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            applyFilters();
+        });
+    });
+    
+    // Обработка кнопки "Применить"
+    const applyButton = document.querySelector('.apply-filters');
+    if (applyButton) {
+        applyButton.addEventListener('click', applyFilters);
+    }
+    
+    // Обработка кнопки "Сбросить"
+    const resetButton = document.querySelector('.reset-filters');
+    if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+    }
+    
+    function applyFilters() {
+        const searchQuery = document.querySelector('.search-input').value;
+        const selectedCategories = Array.from(document.querySelectorAll('.category-checkbox-label input:checked'))
+                                      .map(cb => cb.value);
+        
+        const params = new URLSearchParams();
+        
+        if (searchQuery) {
+            params.append('query', searchQuery);
+        }
+        
+        selectedCategories.forEach(category => {
+            params.append('category', category);
+        });
+        
+        window.location.href = `${window.location.pathname}?${params.toString()}`;
+    }
+    
+    function resetFilters() {
+        const searchQuery = document.querySelector('.search-input').value;
+        const url = searchQuery ? `${window.location.pathname}?query=${searchQuery}` : window.location.pathname;
+        window.location.href = url;
+    }
+});
+</script>
+
         <div class="product-list">
             {% if products %}
                 {% for product in products %}
-                <div class="product-item">
-                    <div class="product-image">
-                        {% if product.image %}
-                        <img src="{{ url_for('static', filename='images/' + product.image) }}" alt="{{ product.name }}">
-                        {% else %}
-                        <img src="{{ url_for('static', filename='images/placeholder.jpg') }}" alt="No image">
-                        {% endif %}
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-title">{{ product.name }}</h3>
-                        <p class="product-article">Артикул: {{ product.article }}</p>
-    
-                        <div class="product-variants">
-                            {% for variant in product.variants %}
-                            <div class="variant-item">
-                                <span class="variant-size">
-                                    {{ variant['Длина (см)'] }} × {{ variant['Ширина (см)'] }} × {{ variant['Высота (см)'] }} см
-                                </span>
-                                <span class="variant-price">{{ variant['Цена'] }} ₽</span>
-                                <button class="add-to-cart-btn" data-row="{{ variant.row }}">
-                                    <i class="fas fa-cart-plus"></i>
-                                </button>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        
-                        {% if not is_seller and not supplier_view %}
-                        <div class="product-actions">
-                            {% for variant in product.variants %}
-                            <div class="action-buttons">
-                                <a href="{{ url_for('edit_product', row=variant.row) }}" class="btn edit-btn">
-                                    <i class="fas fa-edit"></i> Редактировать
-                                </a>
-                                <form action="{{ url_for('delete_product', row=variant.row) }}" method="POST" class="delete-form">
-                                    <button type="submit" class="btn delete-btn">
-                                        <i class="fas fa-trash"></i> Удалить
-                                    </button>
-                                </form>
-                            </div>
-                            {% endfor %}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
+               <div class="product-item">
+    <div class="product-image">
+    {% if product.image %}
+        <img src="{{ product.image }}" alt="{{ product.name }}"
+             onerror="this.onerror=null;this.src='{{ url_for('static', filename='images/no-image.png') }}'">
+    {% else %}
+        <div class="no-image" style="background: #2a2a2a; height: 100%; display: flex; align-items: center; justify-content: center;">
+            <i class="fas fa-image" style="font-size: 2rem; color: #444;"></i>
+        </div>
+    {% endif %}
+</div>
+
+    <div class="product-info">
+        <h3 class="product-title">{{ product.name }}</h3>
+        <p class="product-article">Артикул: {{ product.article }}</p>
+
+        <div class="product-meta">
+    <div class="product-meta-item">
+        <span class="product-meta-label">Категория:</span>
+        <span class="product-meta-value">{{ product.category or 'Не указана' }}</span>
+    </div>
+    <div class="product-meta-item">
+        <span class="product-meta-label">Вес:</span>
+        <span class="product-meta-value">
+            {% if product.weight %}
+                {{ "%.2f"|format(product.weight) }} кг
+            {% else %}
+                Не указан
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+{% if product.description %}
+<div class="description-container">
+    <div class="description-toggle" onclick="toggleDescription(this)">
+        <span>Описание</span>
+        <i class="fas fa-chevron-down"></i>
+    </div>
+    <div class="product-description">
+        {{ product.description }}
+    </div>
+</div>
+{% endif %}
+
+        <div class="product-variants">
+            {% for variant in product.variants %}
+            <div class="variant-item">
+                <span class="variant-size">
+                    {{ variant['Длина (см)'] }} × {{ variant['Ширина (см)'] }} × {{ variant['Высота (см)'] }} см
+                </span>
+                <span class="variant-price">{{ variant['Цена'] }} ₽</span>
+                <button class="add-to-cart-btn" data-row="{{ variant.row }}">
+                    <i class="fas fa-cart-plus"></i>
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if not is_seller and not supplier_view %}
+        <div class="product-actions">
+            <div class="action-buttons">
+                <a href="{{ url_for('edit_product', row=product.variants[0].row) }}" class="btn edit-btn">
+                    <i class="fas fa-edit"></i> Редактировать
+                </a>
+                <form action="{{ url_for('delete_product', row=product.variants[0].row) }}" method="POST" class="delete-form">
+                    <button type="submit" class="btn delete-btn">
+                        <i class="fas fa-trash"></i> Удалить
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
                 {% endfor %}
             {% else %}
                 <div class="empty-state">
@@ -550,7 +1211,7 @@
             button.addEventListener('click', function() {
                 const row = this.getAttribute('data-row');
                 const button = this;
-                
+
                 button.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                 button.disabled = true;
 
@@ -566,14 +1227,14 @@
                     if (data.success) {
                         // Обновляем счетчик корзины
                         document.getElementById('cart-count').textContent = data.cart_count;
-                        
+
                         // Анимация добавления
                         button.innerHTML = '<i class="fas fa-check"></i>';
                         setTimeout(() => {
                             button.innerHTML = '<i class="fas fa-cart-plus"></i>';
                             button.disabled = false;
                         }, 1000);
-                        
+
                         // Всплывающее уведомление
                         const notification = document.createElement('div');
                         notification.style.position = 'fixed';
@@ -590,12 +1251,12 @@
                         notification.style.transition = 'all 0.3s ease';
                         notification.innerHTML = '<i class="fas fa-check-circle"></i> Товар добавлен в корзину';
                         document.body.appendChild(notification);
-                        
+
                         setTimeout(() => {
                             notification.style.transform = 'translateY(0)';
                             notification.style.opacity = '1';
                         }, 10);
-                        
+
                         setTimeout(() => {
                             notification.style.transform = 'translateY(100px)';
                             notification.style.opacity = '0';
@@ -616,6 +1277,24 @@
         });
     });
     </script>
+    <script>
+    function toggleDescription(button) {
+        const container = button.closest('.description-container');
+        const description = container.querySelector('.product-description');
+        const icon = button.querySelector('i');
+
+        button.classList.toggle('active');
+        description.classList.toggle('expanded');
+
+        // Анимированное раскрытие
+        if (description.classList.contains('expanded')) {
+            description.style.maxHeight = description.scrollHeight + 'px';
+        } else {
+            description.style.maxHeight = '0';
+        }
+    }
+</script>
+
     <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
 </body>
 </html>
